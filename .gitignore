@@ -1,0 +1,59 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+Berikut adalah `.gitignore` komprehensif yang dirancang khusus untuk proyek Python, sudah mencakup folder virtual environment dan cache yang Anda sebutkan:
+
+```gitignore
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.noserc
+nosetests.xml
+
+# Environment Variables & Secrets
+.env
+.env.local
+*.pem
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+debug_log.txt
+
+/chroma_db/*/

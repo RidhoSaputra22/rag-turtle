@@ -1,0 +1,6 @@
+{
+  "id": "house.basic",
+  "category": "house",
+  "embedding_text": "basic simple house home building rectangle body triangle roof windows door",
+  "context": "HOUSE BASIC: rectangular body, roof above body, door at bottom center, windows distributed symmetrically. Default windows: 2. Default floors: 1. Gable roof is preferred."
+}
