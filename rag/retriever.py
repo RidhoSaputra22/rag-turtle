@@ -32,7 +32,7 @@ class Retriever:
             raise RuntimeError(
                 "RAG collection belum ada. "
                 "Jalankan: "
-                "python -m rag.index_knowledge"
+                "python3 -m rag.index_knowledge"
             )
     
     def search(

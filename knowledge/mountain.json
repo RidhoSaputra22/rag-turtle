@@ -1,0 +1,6 @@
+{
+  "id": "mountain.basic",
+  "category": "nature",
+  "embedding_text": "mountain gunung peak snowy mountain range background landscape",
+  "context": "MOUNTAIN: place near top-left, top, or top-right so it sits behind the main subject. Use gray or blue-gray colors. Large mountains may use snow_cap true with white secondary_color. Multiple mountains can share the top band by using offset_x and offset_y."
+}

@@ -2,6 +2,7 @@ import time
 import inspect
 from pathlib import Path
 from functools import wraps
+from datetime import datetime
 
 
 class Debug:
@@ -26,8 +27,15 @@ class Debug:
 
         path = Path(filename)
 
-        with path.open("w", encoding="utf-8") as file:
-            file.write(f"[DEBUG] {message}\n")
+        timestamp = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
+        with path.open("a", encoding="utf-8") as file:
+            file.write(
+                f"[{timestamp}] [DEBUG] "
+                f"{message}\n"
+            )
 
     def timer(self, func):
         """Decorator for measuring function execution time."""

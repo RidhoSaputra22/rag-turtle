@@ -15,10 +15,11 @@ class OllamaProvider:
     def generate_json(
         self,
         system_prompt,
-        user_prompt
+        user_prompt,
+        on_chunk=None
     ):
 
-        response = ollama.chat(
+        stream = ollama.chat(
 
             model=self.model,
 
@@ -40,6 +41,8 @@ class OllamaProvider:
             # Force JSON output
             format="json",
 
+            stream=True,
+
             # Qwen3 doesn't need
             # thinking for this task
             think=False,
@@ -54,7 +57,34 @@ class OllamaProvider:
             }
         )
 
+        chunks = []
+        final_response = None
+
+        for response in stream:
+
+            final_response = response
+
+            content = (
+                response.message.content
+                or ""
+            )
+
+            if content:
+                chunks.append(
+                    content
+                )
+
+                if on_chunk:
+                    on_chunk(
+                        content
+                    )
+
+        if final_response is None:
+            raise RuntimeError(
+                "Ollama returned no response."
+            )
+
         return (
-            response.message.content,
-            response
+            "".join(chunks),
+            final_response
         )

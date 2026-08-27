@@ -12,7 +12,7 @@ DEBUG_MODE = True
 # OLLAMA
 # =============================
 
-LLM_MODEL = "gemma4"
+LLM_MODEL = "qwen3:0.6b"
 
 EMBED_MODEL = "embeddinggemma"
 
@@ -27,7 +27,7 @@ COLLECTION_NAME = "turtle_knowledge"
 
 KNOWLEDGE_PATH = BASE_DIR / "knowledge"
 
-TOP_K = 4
+TOP_K = 8
 
 
 # =============================
@@ -38,6 +38,12 @@ SKILL_PATH = (
     BASE_DIR
     / "prompts"
     / "skill.md"
+)
+
+PLAN_SKILL_PATH = (
+    BASE_DIR
+    / "prompts"
+    / "plan.md"
 )
 
 

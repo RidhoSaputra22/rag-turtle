@@ -1,6 +1,6 @@
 {
   "id": "tree.basic",
   "category": "nature",
-  "embedding_text": "tree plant trunk leaves green foliage nature",
-  "context": "TREE: use a narrow brown rectangular trunk and multiple overlapping circles for foliage. Larger trees should have a wider canopy."
+  "embedding_text": "tree pohon plant trunk leaves green foliage nature",
+  "context": "TREE: use a narrow brown rectangular trunk and multiple overlapping circles for foliage. Larger trees should have a wider canopy. Trees usually work well in the lower half of the scene."
 }

@@ -1,0 +1,6 @@
+{
+  "id": "star.basic",
+  "category": "sky",
+  "embedding_text": "star bintang night sky small bright points",
+  "context": "STAR: use small bright stars in the top band for night scenes. Multiple stars can share top-left, top, or top-right by using offset_x and offset_y."
+}

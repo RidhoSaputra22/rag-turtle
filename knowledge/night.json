@@ -1,6 +1,6 @@
 {
   "id": "scene.night",
   "category": "scene",
-  "embedding_text": "night evening dark sky moon stars dark background",
-  "context": "NIGHT SCENE: use a dark navy background. Windows may use warm yellow colors. Prefer a moon instead of a bright daytime sun."
+  "embedding_text": "night malam evening dark sky moon stars dark background bulan bintang",
+  "context": "NIGHT SCENE: use a dark navy background. Windows may use warm yellow colors. Prefer a moon and small stars instead of a bright daytime sun."
 }

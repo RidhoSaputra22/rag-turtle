@@ -4,15 +4,30 @@ from scene.models import Scene
 POSITION_MAP = {
     "left": (-260, 0),
     "center": (0, 0),
+    "middle": (0, 0),
+    "mid": (0, 0),
+    "centre": (0, 0),
     "right": (260, 0),
+    "center-left": (-260, 0),
+    "center-right": (260, 0),
+    "middle-left": (-260, 0),
+    "middle-right": (260, 0),
+    "mid-left": (-260, 0),
+    "mid-right": (260, 0),
 
     "top-left": (-260, 180),
     "top": (0, 180),
+    "top-center": (0, 180),
     "top-right": (260, 180),
+    "upper-left": (-260, 180),
+    "upper-right": (260, 180),
 
     "bottom-left": (-260, -180),
     "bottom": (0, -180),
-    "bottom-right": (260, -180)
+    "bottom-center": (0, -180),
+    "bottom-right": (260, -180),
+    "lower-left": (-260, -180),
+    "lower-right": (260, -180)
 }
 
 SIZE_MAP = {
@@ -26,12 +41,19 @@ COLOR_MAP = {
     "krem": "beige",
     "merah": "red",
     "biru": "blue",
+    "biru muda": "lightblue",
     "kuning": "yellow",
     "hijau": "green",
+    "hijau muda": "lightgreen",
+    "hijau tua": "darkgreen",
     "coklat": "brown",
     "hitam": "black",
     "putih": "white",
     "abu-abu": "gray",
+    "abu abu": "gray",
+    "merah muda": "pink",
+    "oranye": "orange",
+    "langit": "skyblue",
 
     # Semantic colors
     "dark": "#0f172a",
@@ -44,6 +66,10 @@ COLOR_MAP = {
     "golden": "gold",
     "light blue": "lightblue",
     "sky blue": "skyblue",
+    "light gray": "lightgray",
+    "dark gray": "dimgray",
+    "light green": "lightgreen",
+    "dark green": "darkgreen",
 }
 
 
@@ -58,14 +84,58 @@ def normalize_color(color: str | None) -> str | None:
         color
     )
 
+
+def _number_property(
+    properties,
+    name,
+    default
+):
+
+    value = properties.get(
+        name,
+        default
+    )
+
+    try:
+        return float(value)
+    except (
+        TypeError,
+        ValueError
+    ):
+        return default
+
+
 def normalize_scene(scene: Scene):
 
     normalized_objects = []
 
     for obj in scene.objects:
 
+        properties = dict(
+            obj.properties
+        )
+
         x, y = POSITION_MAP[obj.position]
-        scale = SIZE_MAP[obj.size]
+        scale = (
+            SIZE_MAP[obj.size]
+            * _number_property(
+                properties,
+                "scale_multiplier",
+                1.0
+            )
+        )
+
+        x += _number_property(
+            properties,
+            "offset_x",
+            0.0
+        )
+
+        y += _number_property(
+            properties,
+            "offset_y",
+            0.0
+        )
 
         normalized_objects.append({
             **obj.model_dump(),

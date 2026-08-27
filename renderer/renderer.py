@@ -10,6 +10,13 @@ from renderer.objects import (
     draw_tree,
     draw_sun,
     draw_cloud,
+    draw_mountain,
+    draw_hill,
+    draw_river,
+    draw_bush,
+    draw_flower,
+    draw_moon,
+    draw_star,
     draw_basic_object
 )
 
@@ -80,6 +87,55 @@ def render_scene(
         elif obj_type == "cloud":
 
             draw_cloud(
+                pen,
+                obj
+            )
+
+        elif obj_type == "mountain":
+
+            draw_mountain(
+                pen,
+                obj
+            )
+
+        elif obj_type == "hill":
+
+            draw_hill(
+                pen,
+                obj
+            )
+
+        elif obj_type == "river":
+
+            draw_river(
+                pen,
+                obj
+            )
+
+        elif obj_type == "bush":
+
+            draw_bush(
+                pen,
+                obj
+            )
+
+        elif obj_type == "flower":
+
+            draw_flower(
+                pen,
+                obj
+            )
+
+        elif obj_type == "moon":
+
+            draw_moon(
+                pen,
+                obj
+            )
+
+        elif obj_type == "star":
+
+            draw_star(
                 pen,
                 obj
             )

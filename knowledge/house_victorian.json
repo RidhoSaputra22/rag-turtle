@@ -1,6 +1,6 @@
 {
   "id": "house.victorian",
   "category": "house",
-  "embedding_text": "victorian house architecture steep gable roof decorative trim tall windows chimney two story classic home",
-  "context": "VICTORIAN HOUSE: use a steep gable roof, decorative trim, tall windows and a more vertical facade. Usually 2 floors. Chimney is common but optional. Use contrasting roof and wall colors."
+  "embedding_text": "victorian house rumah architecture steep gable roof decorative trim tall windows chimney two story classic home",
+  "context": "VICTORIAN HOUSE: use a steep gable roof, decorative trim, tall windows and a more vertical facade. Usually 2 floors. Chimney is common but optional. Use contrasting roof and wall colors. Place it after distant landscape objects so the house stays visible."
 }

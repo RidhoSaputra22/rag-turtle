@@ -1,0 +1,6 @@
+{
+  "id": "scene.countryside",
+  "category": "scene",
+  "embedding_text": "pemandangan landscape countryside village scenic rumah gunung sungai bukit rumput flowers bushes sky",
+  "context": "COUNTRYSIDE LANDSCAPE: choose a sky-like background color for daytime scenes. Put large distant objects first in the objects array, then mid-ground objects, then foreground details. Mountains belong in the top band, hills in the lower band, rivers can flow from the side toward the foreground, and bushes or flower patches work well near the bottom corners."
+}
