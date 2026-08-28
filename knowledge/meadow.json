@@ -1,0 +1,6 @@
+{
+  "id": "meadow.rolling",
+  "category": "nature",
+  "embedding_text": "meadow field grass rumput padang green rolling ground landscape lower canvas",
+  "context": "MEADOW: use meadow as the explicit ground plane in the lower portion of a daytime landscape. Position bottom with large size, normally offset_y around -55, width_scale around 1.0, and a natural green primary colour. A lighter secondary_color produces a gentle rolling-horizon highlight. Draw meadow after mountains but before hills, paths, houses, trees, bushes, and flowers."
+}

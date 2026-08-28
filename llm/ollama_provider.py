@@ -16,7 +16,8 @@ class OllamaProvider:
         self,
         system_prompt,
         user_prompt,
-        on_chunk=None
+        on_chunk=None,
+        schema=None,
     ):
 
         stream = ollama.chat(
@@ -38,8 +39,10 @@ class OllamaProvider:
                 }
             ],
 
-            # Force JSON output
-            format="json",
+            # Ollama accepts a JSON Schema here. Supplying the Pydantic schema
+            # makes a small model follow the contract much more reliably than
+            # the generic `format="json"` mode alone.
+            format=schema or "json",
 
             stream=True,
 

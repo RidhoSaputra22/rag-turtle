@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import re
+from collections import Counter
 from typing import Any
 
 from pydantic import (
@@ -61,10 +62,23 @@ REQUESTED_OBJECT_KEYWORDS = {
         "hills",
         "bukit"
     ],
+    "meadow": [
+        "meadow",
+        "field",
+        "grass",
+        "rumput",
+        "padang",
+    ],
     "river": [
         "river",
         "sungai",
         "stream"
+    ],
+    "path": [
+        "path",
+        "road",
+        "jalan",
+        "setapak",
     ],
     "bush": [
         "bush",
@@ -85,6 +99,26 @@ REQUESTED_OBJECT_KEYWORDS = {
         "stars",
         "bintang"
     ],
+}
+
+SCENERY_KEYWORDS = {
+    "scenery",
+    "landscape",
+    "countryside",
+    "nature",
+    "pemandangan",
+    "alam",
+    "pedesaan",
+    "indah",
+    "cantik",
+    "beautiful",
+}
+
+NIGHT_KEYWORDS = {
+    "night",
+    "malam",
+    "evening",
+    "senja",
 }
 
 
@@ -360,6 +394,19 @@ RECIPE {index}:
                     "width_scale": 1.1,
                 },
             },
+            "meadow": {
+                "position": "bottom",
+                "size": "large",
+                "color": "#78b957",
+                "secondary_color": "#9fd278",
+                "layer": "background",
+                "reason": "Membentuk bidang rumput berlapis agar area bawah tidak kosong.",
+                "properties": {
+                    "offset_y": -55,
+                    "width_scale": 1.05,
+                    "height_scale": 1.0,
+                },
+            },
             "river": {
                 "position": "left",
                 "size": "large",
@@ -372,6 +419,20 @@ RECIPE {index}:
                     "offset_y": -60,
                     "bend": "right",
                     "length_scale": 1.3,
+                },
+            },
+            "path": {
+                "position": "bottom",
+                "size": "medium",
+                "color": "#d2b48c",
+                "secondary_color": "#ecd9ad",
+                "layer": "midground",
+                "reason": "Menciptakan leading line menuju subjek utama.",
+                "properties": {
+                    "offset_y": -45,
+                    "bend": "center",
+                    "width_scale": 0.9,
+                    "length_scale": 1.1,
                 },
             },
             "hill": {
@@ -395,8 +456,8 @@ RECIPE {index}:
                 "layer": "midground",
                 "reason": "Memenuhi elemen pohon yang diminta user.",
                 "properties": {
-                    "offset_x": 120,
-                    "offset_y": 70,
+                    "offset_x": -45,
+                    "offset_y": 45,
                 },
             },
             "flower": {
@@ -416,7 +477,7 @@ RECIPE {index}:
                 "position": "bottom-right",
                 "size": "small",
                 "color": "forestgreen",
-                "secondary_color": None,
+                "secondary_color": "#5fae5d",
                 "layer": "foreground",
                 "reason": "Menambah semak pendukung di foreground.",
                 "properties": {
@@ -428,7 +489,7 @@ RECIPE {index}:
             "sun": {
                 "position": "top-right",
                 "size": "medium",
-                "color": "gold",
+                "color": "#ffd166",
                 "secondary_color": None,
                 "layer": "sky",
                 "reason": "Memenuhi elemen matahari yang diminta user.",
@@ -441,7 +502,7 @@ RECIPE {index}:
                 "position": "top-right",
                 "size": "medium",
                 "color": "white",
-                "secondary_color": None,
+                "secondary_color": "#d9edf5",
                 "layer": "sky",
                 "reason": "Menambah keseimbangan pada area langit.",
                 "properties": {
@@ -492,6 +553,149 @@ RECIPE {index}:
             **payload
         )
 
+    def _is_scenery_request(
+        self,
+        user_request,
+    ):
+
+        tokens = set(
+            re.findall(
+                r"[\w-]+",
+                user_request.lower(),
+            )
+        )
+
+        requested = self._extract_requested_types(user_request)
+        nature_types = {
+            "mountain",
+            "hill",
+            "meadow",
+            "river",
+            "tree",
+            "bush",
+            "flower",
+        }
+
+        return bool(tokens & SCENERY_KEYWORDS) or len(
+            requested & nature_types
+        ) >= 2
+
+    def _is_night_request(
+        self,
+        user_request,
+        plan,
+    ):
+
+        tokens = set(
+            re.findall(
+                r"[\w-]+",
+                user_request.lower(),
+            )
+        )
+
+        return bool(tokens & NIGHT_KEYWORDS) or any(
+            obj.type in {"moon", "star"}
+            for obj in plan.planned_objects
+        )
+
+    def _sort_plan_objects(
+        self,
+        objects,
+    ):
+
+        return [
+            obj
+            for _, obj in sorted(
+                enumerate(objects),
+                key=lambda item: (
+                    self._layer_rank(item[1].layer),
+                    item[0],
+                ),
+            )
+        ]
+
+    def _enrich_plan_for_scenery(
+        self,
+        user_request,
+        plan,
+    ):
+        """Guarantee visual depth when a valid plan is still too sparse.
+
+        This is deliberately deterministic: the LLM remains the art director,
+        while this guardrail ensures that a small model cannot return the very
+        empty but technically valid landscape shown in the initial renderer.
+        """
+
+        if not self._is_scenery_request(user_request):
+            return plan, []
+
+        is_night = self._is_night_request(user_request, plan)
+        present = {
+            obj.type
+            for obj in plan.planned_objects
+        }
+        candidates = (
+            [
+                "mountain",
+                "meadow",
+                "hill",
+                "tree",
+                "bush",
+                "flower",
+                "moon",
+                "star",
+            ]
+            if is_night
+            else [
+                "cloud",
+                "sun",
+                "mountain",
+                "meadow",
+                "hill",
+                "tree",
+                "bush",
+                "flower",
+            ]
+        )
+
+        # A path is meaningful only when a house is present; it creates a
+        # focal leading line without inventing a building the user did not ask
+        # for.
+        if "house" in present:
+            candidates.insert(4, "path")
+
+        planned_objects = list(plan.planned_objects)
+        added_types = []
+
+        for obj_type in candidates:
+            if obj_type in present or len(planned_objects) >= 10:
+                continue
+
+            planned_objects.append(
+                self._default_plan_object(
+                    obj_type,
+                    plan.background,
+                )
+            )
+            present.add(obj_type)
+            added_types.append(obj_type)
+
+        if not added_types:
+            return plan, []
+
+        return (
+            SceneryPlan(
+                **{
+                    **plan.model_dump(),
+                    "planned_objects": [
+                        obj.model_dump()
+                        for obj in self._sort_plan_objects(planned_objects)
+                    ],
+                }
+            ),
+            added_types,
+        )
+
     def _augment_plan(
         self,
         user_request,
@@ -520,22 +724,15 @@ RECIPE {index}:
                 )
             )
 
-        planned_objects.sort(
-            key=lambda obj: (
-                self._layer_rank(
-                    obj.layer
-                ),
-                obj.position,
-            )
-        )
-
         return (
             SceneryPlan(
                 **{
                     **plan.model_dump(),
                     "planned_objects": [
                         obj.model_dump()
-                        for obj in planned_objects
+                        for obj in self._sort_plan_objects(
+                            planned_objects
+                        )
                     ],
                 }
             ),
@@ -554,7 +751,6 @@ RECIPE {index}:
                     plan_object.model_dump().items()
                 )
                 if key not in {
-                    "layer",
                     "reason",
                 }
             }
@@ -566,79 +762,66 @@ RECIPE {index}:
         plan,
         scene
     ):
-
-        missing_types = (
-            self._missing_requested_types(
-                user_request,
-                scene.objects
-            )
+        scene_objects = list(scene.objects)
+        observed_counts = Counter(
+            obj.type
+            for obj in scene_objects
         )
-
-        if not missing_types:
-            return scene, []
-
-        scene_objects = list(
-            scene.objects
+        planned_counts = Counter(
+            obj.type
+            for obj in plan.planned_objects
         )
+        added_types = []
 
-        planned_by_type = {}
-
+        # The plan is the composition blueprint. Count-based reconciliation
+        # preserves repeated objects such as a row of trees while allowing the
+        # model to add its own harmless details.
         for plan_object in plan.planned_objects:
-            planned_by_type.setdefault(
-                plan_object.type,
-                []
-            ).append(
-                plan_object
-            )
-
-        for obj_type in missing_types:
-
-            if planned_by_type.get(
-                obj_type
-            ):
-                plan_object = (
-                    planned_by_type[
-                        obj_type
-                    ][0]
-                )
-            else:
-                plan_object = (
-                    self._default_plan_object(
-                        obj_type,
-                        scene.background
-                    )
-                )
+            if observed_counts[plan_object.type] >= planned_counts[
+                plan_object.type
+            ]:
+                continue
 
             scene_objects.append(
-                self._plan_object_to_scene_object(
-                    plan_object
-                )
+                self._plan_object_to_scene_object(plan_object)
             )
+            observed_counts[plan_object.type] += 1
+            added_types.append(plan_object.type)
 
-        layer_by_type = {}
-
-        for plan_object in plan.planned_objects:
-            layer_by_type.setdefault(
-                plan_object.type,
-                plan_object.layer
-            )
-
-        scene_objects = sorted(
+        for obj_type in self._missing_requested_types(
+            user_request,
             scene_objects,
-            key=lambda obj: self._layer_rank(
-                layer_by_type.get(
-                    obj.type,
-                    "midground"
+        ):
+            scene_objects.append(
+                self._plan_object_to_scene_object(
+                    self._default_plan_object(
+                        obj_type,
+                        scene.background,
+                    )
                 )
             )
-        )
+            added_types.append(obj_type)
+
+        if not added_types:
+            return scene, []
+
+        scene_objects = [
+            obj
+            for _, obj in sorted(
+                enumerate(scene_objects),
+                key=lambda item: (
+                    self._layer_rank(item[1].layer),
+                    item[0],
+                ),
+            )
+        ]
 
         return (
             Scene(
                 background=scene.background,
-                objects=scene_objects
+                objects=scene_objects,
             ),
-            missing_types,
+            list(dict.fromkeys(added_types)),
         )
 
     def _build_retrieval_query(
@@ -863,7 +1046,8 @@ Return JSON only.
                 on_chunk=self._emit_chunk(
                     on_chunk,
                     "SCENERY PLAN"
-                )
+                ),
+                schema=SceneryPlan.model_json_schema(),
             )
         )
 
@@ -904,6 +1088,15 @@ Return JSON only.
                         plan
                     )
                 )
+
+                plan, scenic_types = (
+                    self._enrich_plan_for_scenery(
+                        user_request,
+                        plan,
+                    )
+                )
+
+                added_types.extend(scenic_types)
 
                 if added_types:
                     self._emit_status(
@@ -977,6 +1170,15 @@ Return JSON only.
                         )
                     )
 
+                    fallback_plan, scenic_types = (
+                        self._enrich_plan_for_scenery(
+                            user_request,
+                            fallback_plan,
+                        )
+                    )
+
+                    added_types.extend(scenic_types)
+
                     if added_types:
                         self._emit_status(
                             on_status,
@@ -1014,7 +1216,8 @@ Return JSON only.
                         on_chunk=self._emit_chunk(
                             on_chunk,
                             "SCENERY PLAN REPAIR"
-                        )
+                        ),
+                        schema=SceneryPlan.model_json_schema(),
                     )
                 )
 
@@ -1065,7 +1268,8 @@ Return JSON only.
                 on_chunk=self._emit_chunk(
                     on_chunk,
                     "SCENE JSON"
-                )
+                ),
+                schema=Scene.model_json_schema(),
             )
         )
 
@@ -1167,7 +1371,8 @@ Return JSON only.
                         on_chunk=self._emit_chunk(
                             on_chunk,
                             "SCENE JSON REPAIR"
-                        )
+                        ),
+                        schema=Scene.model_json_schema(),
                     )
                 )
 

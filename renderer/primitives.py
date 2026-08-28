@@ -19,7 +19,7 @@ def rectangle(
     width,
     height,
     fill="white",
-    outline="black"
+    outline=None
 ):
 
     left = (
@@ -38,10 +38,7 @@ def rectangle(
 
     t.setheading(0)
 
-    t.color(
-        outline,
-        fill
-    )
+    t.color(outline or fill, fill)
 
     t.begin_fill()
 
@@ -58,15 +55,12 @@ def polygon(
     t, 
     points,
     fill="white",
-    outline="black"
+    outline=None
 ):
     if not points:
         return 
     
-    t.color(
-        outline,
-        fill
-    )
+    t.color(outline or fill, fill)
 
     goto(
         t,
@@ -97,7 +91,7 @@ def circle(
     y,
     radius,
     fill="white",
-    outline="black"
+    outline=None
 ):
 
     goto(
@@ -108,10 +102,7 @@ def circle(
 
     t.setheading(0)
 
-    t.color(
-        outline,
-        fill
-    )
+    t.color(outline or fill, fill)
 
     t.begin_fill()
 

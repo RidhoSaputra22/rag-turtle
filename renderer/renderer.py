@@ -11,8 +11,10 @@ from renderer.objects import (
     draw_sun,
     draw_cloud,
     draw_mountain,
+    draw_meadow,
     draw_hill,
     draw_river,
+    draw_path,
     draw_bush,
     draw_flower,
     draw_moon,
@@ -98,6 +100,13 @@ def render_scene(
                 obj
             )
 
+        elif obj_type == "meadow":
+
+            draw_meadow(
+                pen,
+                obj
+            )
+
         elif obj_type == "hill":
 
             draw_hill(
@@ -108,6 +117,13 @@ def render_scene(
         elif obj_type == "river":
 
             draw_river(
+                pen,
+                obj
+            )
+
+        elif obj_type == "path":
+
+            draw_path(
                 pen,
                 obj
             )

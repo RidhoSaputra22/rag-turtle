@@ -1,0 +1,6 @@
+{
+  "id": "scene.composition.layered",
+  "category": "scene",
+  "embedding_text": "pemandangan indah beautiful scenery landscape countryside composition depth layers palette focal point foreground mountain meadow tree flowers",
+  "context": "LAYERED SCENERY: Build depth in this order: sky accents (sun/clouds or moon/stars), distant mountain, explicit lower ground such as meadow, then hills/river/path, then a focal house or tree, and finally bushes/flowers. A pleasing countryside scene usually has 7–10 objects over at least three layers. Keep the visual weight balanced: if a large mountain sits left, put the focal tree/house slightly right. Use offset_x and offset_y to avoid stacking objects on exactly the same anchor."
+}

@@ -13,6 +13,7 @@ from typing import (
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field
 )
 
@@ -23,7 +24,9 @@ ObjectType = Literal[
     "cloud",
     "mountain",
     "hill",
+    "meadow",
     "river",
+    "path",
     "bush",
     "flower",
     "moon",
@@ -79,7 +82,11 @@ Layer = Literal[
 
 
 class SceneObject(BaseModel):
-    type : ObjectType
+    """One visible element in the scene contract sent by the model."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: ObjectType
     position: Position = "center"
     size: Size = "medium"
     color: str = "black"
@@ -87,6 +94,10 @@ class SceneObject(BaseModel):
     secondary_color: (
         str | None
     ) = None
+
+    # Layer is repeated in the final JSON so the renderer does not have to
+    # guess the drawing order from an object's type or position.
+    layer: Layer = "midground"
 
     properties: dict[
         str,
@@ -96,7 +107,8 @@ class SceneObject(BaseModel):
     )
 
 class Scene(BaseModel):
-    
+    model_config = ConfigDict(extra="forbid")
+
     background: str = "white"
     objects: List[
         SceneObject
@@ -104,6 +116,8 @@ class Scene(BaseModel):
 
 
 class PlanObject(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     type: ObjectType
     position: Position = "center"
     size: Size = "medium"
@@ -122,6 +136,8 @@ class PlanObject(BaseModel):
 
 
 class SceneryPlan(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     expanded_prompt: str
     background: str = "white"
     atmosphere: str = "balanced"
